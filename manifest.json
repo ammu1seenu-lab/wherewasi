@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "WhereWasI.ai",
+  "version": "0.1.0",
+  "description": "Helps product professionals and researchers resume browser-based work after an interruption.",
+  "permissions": ["storage", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "WhereWasI.ai",
+    "default_popup": "popup.html"
+  }
+}

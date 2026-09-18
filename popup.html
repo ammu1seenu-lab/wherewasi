@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WhereWasI.ai</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <!-- Shown when no session exists in chrome.storage.local -->
+    <main class="card" id="start-view">
+      <p class="brand"><span style="color: #00e5cc">✦</span> WhereWasI</p>
+      <h1>Ready to capture?</h1>
+      <p class="copy">
+        WhereWasI will remember<br />
+        where you were and help you<br />
+        pick up where you left off.
+      </p>
+      <button type="button" id="start-work">Start work →</button>
+    </main>
+
+    <!-- Shown while a session is active (popup can close; session stays) -->
+    <main class="card" id="recording-view" hidden>
+      <p class="brand"><span style="color: #00e5cc">✦</span> WhereWasI</p>
+      <h1><span class="recording-dot">●</span> Capturing your work</h1>
+      <p class="copy" id="started-ago">Started 0 min ago</p>
+      <p class="copy" style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin-bottom: 14px;">
+        Your activity is being saved locally.
+      </p>
+      <button type="button" id="back-to-it">Back To It →</button>
+    </main>
+
+    <!-- Shown after Activity Bundle is generated — core value moment -->
+    <main class="card" id="backtoit-view" hidden>
+      <p class="brand"><span style="color: #00e5cc">✦</span> WhereWasI</p>
+      <h1 id="bit-heading">BACK TO IT</h1>
+      <div id="bit-candidates" style="margin-bottom: 10px;"></div>
+      <p id="bit-laststop" class="copy" style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin-bottom: 14px;"></p>
+      <button type="button" id="continue-btn">Continue where I left off →</button>
+      <button type="button" id="new-work-btn">Start new work</button>
+    </main>
+
+    <script src="bundle.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

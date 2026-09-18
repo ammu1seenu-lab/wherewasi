@@ -1,0 +1,93 @@
+/* Popup chrome: dark theme matching the Lovable UI design. */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 320px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #ffffff;
+  background: #0d0d14;
+}
+
+.card {
+  padding: 20px 18px 18px;
+  background: #12121e;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.25;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+/* Recording indicator dot in "● Capturing your work" */
+.recording-dot {
+  color: #ff4444;
+}
+
+.copy {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 18px;
+}
+
+/* Primary action — Start work, Back To It, Continue */
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #e8403a, #f26b3a);
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+button:focus-visible {
+  outline: 2px solid #00e5cc;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+/* New work button — secondary action, visually quieter than Continue */
+#new-work-btn {
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+#new-work-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* Candidate buttons in ambiguous state */
+#bit-candidates button {
+  text-align: left;
+  font-size: 13px;
+}
