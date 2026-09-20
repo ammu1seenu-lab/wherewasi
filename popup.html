@@ -30,6 +30,13 @@
       <button type="button" id="back-to-it">Back To It →</button>
     </main>
 
+    <!-- Shown while the Activity Bundle is built and the AI snapshot is requested -->
+    <main class="card" id="loading-view" hidden>
+      <p class="brand"><span style="color: #00e5cc">✦</span> WhereWasI</p>
+      <h1>Retracing your steps...</h1>
+      <div id="loading-steps" style="margin-top: 16px;"></div>
+    </main>
+
     <!-- Shown after Activity Bundle is generated — core value moment -->
     <main class="card" id="backtoit-view" hidden>
       <p class="brand"><span style="color: #00e5cc">✦</span> WhereWasI</p>
@@ -37,6 +44,7 @@
       <div id="bit-candidates" style="margin-bottom: 10px;"></div>
       <p id="bit-laststop" class="copy" style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin-bottom: 14px;"></p>
       <button type="button" id="continue-btn">Continue where I left off →</button>
+      <a href="#" id="view-summary-link" class="summary-link">View detailed summary ↓</a>
       <button type="button" id="new-work-btn">Start new work</button>
     </main>
 

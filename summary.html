@@ -3,44 +3,69 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WhereWasI.ai — Detailed Summary</title>
+    <title>WhereWasI.ai — Back To It</title>
     <link rel="stylesheet" href="summary.css" />
   </head>
   <body>
-    <main class="summary-card" id="summary-view">
-      <p class="brand"><span style="color: #00e5cc">✦</span> WhereWasI</p>
-      <h1>Detailed Summary</h1>
+    <header class="page-header">
+      <p class="brand">✦ WhereWasI</p>
+      <h1>BACK TO IT</h1>
+    </header>
 
-      <section>
-        <p class="label">What you explored</p>
-        <p class="value" id="summary-topic">AI assessment platforms</p>
+    <!-- Shown when neither activityBundle nor aiSnapshot exist in storage -->
+    <div id="no-session-view" hidden>
+      <p class="no-session-message">No session data found. Start a new work session.</p>
+    </div>
+
+    <!-- Shown once activityBundle is found in chrome.storage.local -->
+    <div id="summary-content" hidden>
+      <section class="info-card">
+        <p class="section-label">🔍 You were exploring</p>
+        <p class="section-content" id="summary-exploring"></p>
       </section>
 
-      <section>
-        <p class="label">Pages visited</p>
-        <p class="value" id="summary-page-count">8</p>
+      <section class="info-card">
+        <p class="section-label">💡 You discovered</p>
+        <p class="section-content" id="summary-discovered"></p>
       </section>
 
-      <section>
-        <p class="label">Key sources</p>
-        <ul class="value-list" id="summary-sources">
-          <li>Learnosity</li>
-          <li>Competitor X</li>
-          <li>Google</li>
-        </ul>
+      <section class="info-card">
+        <p class="section-label">📍 Last stop</p>
+        <p class="section-content" id="summary-laststop"></p>
       </section>
 
-      <section>
-        <p class="label">Repeated research</p>
-        <p class="value" id="summary-repeated">Learnosity · AI Assessment ×3</p>
+      <section class="info-card">
+        <p class="section-label">➡️ Next</p>
+        <p class="section-content" id="summary-next"></p>
       </section>
 
-      <section>
-        <p class="label">Research trail</p>
-        <p class="value muted" id="summary-trail">24 min · 8 pages · 3 revisits</p>
-      </section>
+      <button
+        type="button"
+        class="breakdown-toggle"
+        id="breakdown-toggle"
+        aria-expanded="false"
+      >
+        Detailed breakdown <span id="breakdown-arrow">↓</span>
+      </button>
+
+      <div class="breakdown-content" id="breakdown-content" hidden>
+        <p class="breakdown-stats" id="summary-stats"></p>
+        <table class="breakdown-table">
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>Domain</th>
+              <th>Visits</th>
+            </tr>
+          </thead>
+          <tbody id="summary-top-pages"></tbody>
+        </table>
+      </div>
 
       <button type="button" id="continue-btn">Continue where I left off →</button>
-    </main>
+      <button type="button" id="new-work-btn">Start new work</button>
+    </div>
+
+    <script src="summary.js"></script>
   </body>
 </html>

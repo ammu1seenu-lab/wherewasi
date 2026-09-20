@@ -70,3 +70,26 @@ async function recordTabActivation(tabId, windowId) {
 chrome.tabs.onActivated.addListener((activeInfo) => {
   recordTabActivation(activeInfo.tabId, activeInfo.windowId);
 });
+
+async function activateTab(tabId, windowId, url) {
+  try {
+    // Tab still exists — activate it and bring its window forward.
+    await chrome.tabs.update(tabId, { active: true });
+    await chrome.windows.update(windowId, { focused: true });
+  } catch (error) {
+    // Tab was closed — reopen the saved URL instead.
+    await chrome.tabs.create({ url });
+  }
+}
+
+// summary.html (and any other extension page) requests tab activation
+// through this message rather than calling chrome.tabs directly.
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!message || message.type !== "activateTab") return;
+
+  activateTab(message.tabId, message.windowId, message.url).then(() =>
+    sendResponse({ ok: true })
+  );
+
+  return true; // keep the message channel open for the async sendResponse
+});

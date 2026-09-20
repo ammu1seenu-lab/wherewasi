@@ -26,11 +26,50 @@ function extractDomain(url) {
   }
 }
 
+// Domains that are never meaningful "resume this" destinations —
+// inbox/calendar checks and social feeds, not research trails.
+const EXCLUDED_DOMAINS = [
+  "mail.google.com",
+  "calendar.google.com",
+  "inbox.google.com",
+  "outlook.live.com",
+  "outlook.office.com",
+  "facebook.com",
+  "twitter.com",
+  "instagram.com",
+  "whatsapp.com",
+  "t.co",
+  "paypal.com",
+  "wise.com",
+  "revolut.com",
+  "chase.com",
+  "wellsfargo.com",
+  "hsbc.com",
+  "accounts.google.com",
+  "login.microsoftonline.com",
+  "appleid.apple.com",
+  "1password.com",
+  "lastpass.com",
+  "dashlane.com"
+];
+
+function shouldExcludeUrl(url) {
+  if (!url) return true;
+  if (url.startsWith("chrome://") || url.startsWith("chrome-extension://")) {
+    return true;
+  }
+  if (url === "about:blank") return true;
+
+  return EXCLUDED_DOMAINS.includes(extractDomain(url));
+}
+
 function buildPageMap(events) {
   // Group events by normalised URL, calculate per-page metrics
   const pages = new Map();
 
   events.forEach((event, index) => {
+    if (shouldExcludeUrl(event.url)) return;
+
     const key = normalizeUrl(event.url);
     const nextEvent = events[index + 1];
     // Duration = time until next tab switch. Last event duration is unknown.
@@ -67,6 +106,19 @@ function buildPageMap(events) {
   return Array.from(pages.values());
 }
 
+// Subset of EXCLUDED_DOMAINS that still gets scored (e.g. reached via a
+// direct URL match that bypassed exclusion) but should rank far below
+// genuine research pages.
+const PENALIZED_DOMAINS = [
+  "mail.google.com",
+  "calendar.google.com",
+  "facebook.com",
+  "twitter.com",
+  "instagram.com",
+  "whatsapp.com",
+  "t.co"
+];
+
 function scoreTab(page, sessionDurationSeconds, mostRecentTimestamp) {
   const maxSeconds = sessionDurationSeconds || 1;
 
@@ -85,12 +137,15 @@ function scoreTab(page, sessionDurationSeconds, mostRecentTimestamp) {
   // How many times did the user revisit (beyond the first visit)
   const revisitScore = Math.min((page.visitCount - 1) / 5, 1);
 
-  return (
+  const score =
     timeScore * 0.4 +
     activationScore * 0.3 +
     recencyScore * 0.2 +
-    revisitScore * 0.1
-  );
+    revisitScore * 0.1;
+
+  const penalty = PENALIZED_DOMAINS.includes(page.domain) ? 0.1 : 1;
+
+  return score * penalty;
 }
 
 function buildActivityBundle(session) {
@@ -104,6 +159,7 @@ function buildActivityBundle(session) {
   const mostRecentTimestamp = events[events.length - 1].timestamp;
 
   const pages = buildPageMap(events);
+  if (pages.length === 0) return null;
 
   // Score every page deterministically — not by AI
   const scored = pages.map(page => ({
