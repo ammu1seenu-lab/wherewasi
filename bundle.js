@@ -50,7 +50,13 @@ const EXCLUDED_DOMAINS = [
   "appleid.apple.com",
   "1password.com",
   "lastpass.com",
-  "dashlane.com"
+  "dashlane.com",
+  "chatgpt.com",
+  "chat.openai.com",
+  "claude.ai",
+  "gemini.google.com",
+  "copilot.microsoft.com",
+  "perplexity.ai"
 ];
 
 function shouldExcludeUrl(url) {
@@ -172,14 +178,17 @@ function buildActivityBundle(session) {
   // Sort highest relevance first
   scored.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-  // Last Stop = the literal final tab the user had active
-  const lastEvent = events[events.length - 1];
+  // Last Stop = the last tab that was not an excluded domain.
+  // Falls back to the raw last event only if every event was excluded.
+  const lastNonExcludedEvent =
+    [...events].reverse().find(e => !shouldExcludeUrl(e.url)) ||
+    events[events.length - 1];
   const lastStop = {
-    url: normalizeUrl(lastEvent.url),
-    title: lastEvent.title,
-    domain: extractDomain(lastEvent.url),
-    tabId: lastEvent.tabId,
-    windowId: lastEvent.windowId
+    url: normalizeUrl(lastNonExcludedEvent.url),
+    title: lastNonExcludedEvent.title,
+    domain: extractDomain(lastNonExcludedEvent.url),
+    tabId: lastNonExcludedEvent.tabId,
+    windowId: lastNonExcludedEvent.windowId
   };
 
   // Suggested Continue = highest relevance score

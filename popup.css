@@ -76,13 +76,15 @@ button:disabled {
 }
 
 /* New work button — secondary action, visually quieter than Continue */
-#new-work-btn {
+#new-work-btn,
+#startfresh-btn {
   margin-top: 8px;
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
 
-#new-work-btn:hover {
+#new-work-btn:hover,
+#startfresh-btn:hover {
   background: rgba(255, 255, 255, 0.14);
 }
 

@@ -82,8 +82,13 @@ async function requestAISnapshot(bundle) {
 
 // ─── View transitions ─────────────────────────────────────────
 
+function getSessionAgeHours(session) {
+  return (Date.now() - session.startTime) / 3600000;
+}
+
 function hideAll() {
   document.getElementById("start-view").hidden = true;
+  document.getElementById("resume-check-view").hidden = true;
   document.getElementById("recording-view").hidden = true;
   document.getElementById("loading-view").hidden = true;
   document.getElementById("backtoit-view").hidden = true;
@@ -92,6 +97,33 @@ function hideAll() {
 function showStartView() {
   hideAll();
   document.getElementById("start-view").hidden = false;
+}
+
+async function showResumeCheckView(session) {
+  hideAll();
+  document.getElementById("resume-check-view").hidden = false;
+
+  const ageHours = getSessionAgeHours(session);
+  const ageDays = Math.floor(ageHours / 24);
+  const ageWholeHours = Math.floor(ageHours);
+  const ageMinutes = Math.round(ageHours * 60);
+  const ageText = ageHours >= 24
+    ? `You were working ${ageDays} day${ageDays === 1 ? "" : "s"} ago`
+    : ageHours >= 1
+      ? `You were working ${ageWholeHours} hour${ageWholeHours === 1 ? "" : "s"} ago`
+      : `You were working ${ageMinutes} minute${ageMinutes === 1 ? "" : "s"} ago`;
+  document.getElementById("resume-age-text").textContent = ageText;
+
+  // Prefer the AI snapshot summary, fall back to top domain from stored bundle
+  let preview = "";
+  const { [AI_SNAPSHOT_KEY]: aiSnapshot, [BUNDLE_KEY]: bundle } =
+    await chrome.storage.local.get([AI_SNAPSHOT_KEY, BUNDLE_KEY]);
+  if (aiSnapshot && aiSnapshot.what_you_were_doing) {
+    preview = aiSnapshot.what_you_were_doing;
+  } else if (bundle && bundle.pages && bundle.pages[0]) {
+    preview = bundle.pages[0].domain;
+  }
+  document.getElementById("resume-preview").textContent = preview;
 }
 
 function showRecordingView(session) {
@@ -261,21 +293,53 @@ async function handleBackToIt() {
 async function handleNewWork() {
   await clearSession();
   showStartView();
+  const heading = document.querySelector("#start-view h1");
+  heading.textContent = "Session cleared ✓";
+  setTimeout(() => { heading.textContent = "Ready to capture?"; }, 1500);
 }
 
 // ─── Init ─────────────────────────────────────────────────────
 
 async function initPopup() {
   const session = await loadActiveSession();
-  if (session) {
+  if (!session) {
+    showStartView();
+    return;
+  }
+
+  if (!session.startTime) {
+    // Old session persisted without startTime — treat as active, not stale.
+    showRecordingView(session);
+    return;
+  }
+
+  const ageHours = getSessionAgeHours(session);
+  console.log(`WhereWasI — session age: ${ageHours.toFixed(2)} hours`);
+
+  if (ageHours < 4) {
     showRecordingView(session);
   } else {
-    showStartView();
+    await showResumeCheckView(session);
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("start-work").addEventListener("click", startWork);
+  document.getElementById("resume-btn").addEventListener("click", async () => {
+    const { [BUNDLE_KEY]: bundle, [AI_SNAPSHOT_KEY]: aiSnapshot } =
+      await chrome.storage.local.get([BUNDLE_KEY, AI_SNAPSHOT_KEY]);
+
+    if (aiSnapshot && bundle) {
+      // Snapshot already exists from a prior Back To It call — skip rebuilding.
+      await showBackToItView(bundle);
+    } else {
+      // No snapshot yet — generate one now.
+      await handleBackToIt();
+    }
+  });
+  document.getElementById("startfresh-btn").addEventListener("click", handleNewWork);
+  document.getElementById("dismiss-resume-btn").addEventListener("click", () => window.close());
+  document.getElementById("dismiss-backtoit-btn").addEventListener("click", () => window.close());
   document.getElementById("back-to-it").addEventListener("click", handleBackToIt);
   document.getElementById("continue-btn").addEventListener("click", e => {
     resumeTab(e.currentTarget.dataset);

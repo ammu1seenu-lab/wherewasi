@@ -5,7 +5,8 @@
 
 const SESSION_KEY = "activeSession";
 const EVENT_CAP = 500;
-const SESSION_MAX_HOURS = 8;
+// Session auto-expires after 24 hours of inactivity — UI handles staleness gracefully before this point via resume-check-view.
+const SESSION_MAX_HOURS = 24;
 const INACTIVITY_TIMEOUT_MINUTES = 60;
 
 // Clears the session if it has exceeded the max age AND been inactive for too long.

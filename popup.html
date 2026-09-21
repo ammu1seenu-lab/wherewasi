@@ -16,7 +16,18 @@
         where you were and help you<br />
         pick up where you left off.
       </p>
-      <button type="button" id="start-work">Start work →</button>
+      <button type="button" id="start-work">Start capturing →</button>
+    </main>
+
+    <!-- Shown when returning to a session that is 4+ hours old -->
+    <main class="card" id="resume-check-view" hidden>
+      <p class="brand"><span style="color: #00e5cc">✦</span> WhereWasI</p>
+      <h1>Welcome back</h1>
+      <p class="copy" id="resume-age-text"></p>
+      <p class="copy" id="resume-preview" style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 18px;"></p>
+      <button type="button" id="resume-btn">Resume session →</button>
+      <button type="button" id="startfresh-btn">Start fresh</button>
+      <a id="dismiss-resume-btn" class="summary-link" style="display:block; text-align:center; margin-top:10px; color: rgba(255,255,255,0.3); font-size:12px; cursor:pointer;">Maybe later</a>
     </main>
 
     <!-- Shown while a session is active (popup can close; session stays) -->
@@ -46,6 +57,7 @@
       <button type="button" id="continue-btn">Continue where I left off →</button>
       <a href="#" id="view-summary-link" class="summary-link">View detailed summary ↓</a>
       <button type="button" id="new-work-btn">Start new work</button>
+      <a id="dismiss-backtoit-btn" class="summary-link" style="display:block; text-align:center; margin-top:10px; color: rgba(255,255,255,0.3); font-size:12px; cursor:pointer;">Maybe later</a>
     </main>
 
     <script src="bundle.js"></script>
