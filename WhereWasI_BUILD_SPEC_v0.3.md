@@ -1070,9 +1070,11 @@ Run the full messy-session test suite (see Section 17a).
 * Test all Chrome failure states
 * Collect user feedback
 
-**Status: Next**
+**Status: Complete ✅ — all 7 tests run and documented**
 
 ## Phase 8 --- Iterate
+
+**Status: Next — fix equal-score ambiguous tab handling**
 
 Fix only validated problems.
 
@@ -1282,4 +1284,18 @@ Instead of auto-expiring, show a gentle prompt when the session is stale:
 - Preview: show what_you_were_doing from aiSnapshot if available, otherwise show top domain from activityBundle
 - Primary button: "Resume session →"
 - Secondary button: "Start fresh"
+
+---
+
+# 26. Phase 7 Messy Session Test Results
+
+| # | Test | Result | Correctness | Grounding | Safety | Completeness | Notes |
+|---|------|--------|-------------|-----------|--------|--------------|-------|
+| 1 | Long session (782 min active) | Pass | Pass | Pass | Fixed | Pass | Session timeout guardrail added — auto-expires after 24h |
+| 2 | Gmail as last tab | Partial | Pass | Pass | Fixed | Pass | Gmail excluded from Continue tab correctly. Last Stop was showing Gmail — fixed to use last non-excluded URL |
+| 3 | Rapid tab switching | Partial | Pass | Pass | Pass | Partial | Fallback showed correctly. No hallucination. AI description not generated for noisy sessions — honest behaviour |
+| 4 | Very short session (2 tabs, 20 sec) | Pass | Pass | Pass | Pass | Pass | Handled gracefully. No crash. Deterministic fallback correct |
+| 5 | AI unavailable fallback | Pass | Pass | Pass | Pass | Pass | Broken endpoint tested. Deterministic fallback showed. No empty screen |
+| 6 | Cross session isolation | Pass | Pass | Pass | Pass | Pass | Zero data leakage between sessions confirmed |
+| 7 | Two equal-score tabs | Partial | Pass | Pass | Pass | Partial | Picked one tab silently. Spec says show two candidates — known gap, Phase 8 |
 
