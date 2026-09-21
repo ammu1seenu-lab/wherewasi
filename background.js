@@ -5,6 +5,36 @@
 
 const SESSION_KEY = "activeSession";
 const EVENT_CAP = 500;
+const SESSION_MAX_HOURS = 8;
+const INACTIVITY_TIMEOUT_MINUTES = 60;
+
+// Clears the session if it has exceeded the max age AND been inactive for too long.
+// Returns true if the session was cleared, false otherwise.
+async function checkSessionTimeout() {
+  const result = await chrome.storage.local.get(SESSION_KEY);
+  const session = result[SESSION_KEY];
+  if (!session) return false;
+
+  const now = Date.now();
+  const sessionAgeMinutes = (now - session.startTime) / 60000;
+  const events = session.activityEvents || [];
+  const lastEventTime = events.length > 0
+    ? events[events.length - 1].timestamp
+    : session.startTime;
+  const inactiveMinutes = (now - lastEventTime) / 60000;
+
+  if (
+    sessionAgeMinutes >= SESSION_MAX_HOURS * 60 &&
+    inactiveMinutes >= INACTIVITY_TIMEOUT_MINUTES
+  ) {
+    await chrome.storage.local.remove(SESSION_KEY);
+    console.log(
+      `WhereWasI: session auto-expired — age ${Math.round(sessionAgeMinutes)} min, inactive ${Math.round(inactiveMinutes)} min`
+    );
+    return true;
+  }
+  return false;
+}
 
 function isSameTab(previous, next) {
   return (
@@ -15,6 +45,9 @@ function isSameTab(previous, next) {
 }
 
 async function recordTabActivation(tabId, windowId) {
+  const expired = await checkSessionTimeout();
+  if (expired) return;
+
   const result = await chrome.storage.local.get(SESSION_KEY);
   const session = result[SESSION_KEY];
 
@@ -69,6 +102,15 @@ async function recordTabActivation(tabId, windowId) {
 // Chrome can wake this worker when the selected tab in a window changes.
 chrome.tabs.onActivated.addListener((activeInfo) => {
   recordTabActivation(activeInfo.tabId, activeInfo.windowId);
+});
+
+// Periodic alarm catches inactivity even when the user isn't switching tabs.
+chrome.alarms.get("sessionTimeout", alarm => {
+  if (!alarm) chrome.alarms.create("sessionTimeout", { periodInMinutes: 15 });
+});
+
+chrome.alarms.onAlarm.addListener(alarm => {
+  if (alarm.name === "sessionTimeout") checkSessionTimeout();
 });
 
 async function activateTab(tabId, windowId, url) {

@@ -3,7 +3,7 @@
   "name": "WhereWasI.ai",
   "version": "0.1.0",
   "description": "Helps product professionals and researchers resume browser-based work after an interruption.",
-  "permissions": ["storage", "tabs"],
+  "permissions": ["storage", "tabs", "alarms"],
   "background": {
     "service_worker": "background.js"
   },

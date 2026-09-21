@@ -1200,6 +1200,8 @@ The product should demonstrate one thing extremely well:
 - [ ] No permanent server-side database of browsing activity or sessions exists in the MVP.
 - [ ] Local session and activity data is deletable at any time via Start New Work.
 - [ ] `GEMINI_API_KEY` and any other secrets are read only from environment variables and are never hardcoded in source.
+- [ ] Session automatically expires after 8 hours of total duration or 60 minutes of inactivity, whichever comes first. Storage is cleared automatically.
+- [ ] Users can manually end a session at any time via Start New Work, which immediately clears all local session data.
 
 ## Browser / Navigation
 
