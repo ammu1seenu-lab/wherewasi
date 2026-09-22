@@ -5,7 +5,7 @@
 // The user must never see an empty recovery screen.
 
 const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 const REQUEST_TIMEOUT_MS = 10000;
 
