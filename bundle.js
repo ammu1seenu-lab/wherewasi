@@ -233,6 +233,12 @@ function buildActivityBundle(session) {
     lastStop,
     suggestedContinue,
     candidateContinueTabs,
+    ambiguousCandidates: isAmbiguous
+      ? [
+          { title: top.title,    domain: top.domain,    url: top.url,    tabId: top.tabId,    windowId: top.windowId },
+          { title: second.title, domain: second.domain, url: second.url, tabId: second.tabId, windowId: second.windowId }
+        ]
+      : null,
     totalEvents: events.length
   };
 }

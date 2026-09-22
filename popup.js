@@ -164,13 +164,29 @@ async function showBackToItView(bundle) {
 
   const { aiSnapshot } = await chrome.storage.local.get(AI_SNAPSHOT_KEY);
 
-  const candidates = bundle.candidateContinueTabs;
   const container = document.getElementById("bit-candidates");
   container.innerHTML = "";
 
-  if (candidates.length === 1) {
+  if (bundle.ambiguousCandidates) {
+    // Ambiguous — two equally likely stopping points, let the user pick
+    document.getElementById("bit-heading").textContent = "WHERE YOU LEFT OFF";
+    document.getElementById("continue-btn").hidden = true;
+
+    bundle.ambiguousCandidates.forEach(c => {
+      const btn = document.createElement("button");
+      btn.innerHTML = `<span style="display:block; font-size:13px;">${c.title || c.domain}</span>
+        <span style="display:block; font-size:11px; opacity:0.5; font-weight:400;">${c.domain}</span>`;
+      btn.style.marginBottom = "8px";
+      btn.style.textAlign = "left";
+      btn.dataset.url = c.url;
+      btn.dataset.tabId = c.tabId;
+      btn.dataset.windowId = c.windowId;
+      btn.addEventListener("click", () => resumeTab(btn.dataset));
+      container.appendChild(btn);
+    });
+  } else {
     // High confidence — one clear tab to continue from
-    const c = candidates[0];
+    const c = bundle.suggestedContinue;
     document.getElementById("bit-heading").textContent = "BACK TO IT";
 
     // Prefer the AI's description of the session over the bare tab title
@@ -190,21 +206,6 @@ async function showBackToItView(bundle) {
     btn.dataset.url = c.url;
     btn.dataset.tabId = c.tabId;
     btn.dataset.windowId = c.windowId;
-  } else {
-    // Ambiguous — show two candidates, let user decide
-    document.getElementById("bit-heading").textContent = "WHERE YOU LEFT OFF";
-    document.getElementById("continue-btn").hidden = true;
-
-    candidates.forEach(c => {
-      const btn = document.createElement("button");
-      btn.textContent = c.title || c.domain;
-      btn.style.marginBottom = "8px";
-      btn.dataset.url = c.url;
-      btn.dataset.tabId = c.tabId;
-      btn.dataset.windowId = c.windowId;
-      btn.addEventListener("click", () => resumeTab(btn.dataset));
-      container.appendChild(btn);
-    });
   }
 
   // Show Last Stop only when it differs from Suggested Continue
